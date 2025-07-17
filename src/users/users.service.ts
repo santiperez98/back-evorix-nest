@@ -1,4 +1,3 @@
-// src/users/users.service.ts
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -11,7 +10,14 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async createUser(data: { email: string; password?: string; name: string; picture?: string; provider?: string }) {
+  async createUser(data: {
+    email: string;
+    password?: string;
+    name: string;
+    picture?: string;
+    provider?: string;
+    role?: 'USER' | 'ADMIN'; // Añade el campo role aquí
+  }) {
     if (data.password) {
       data.password = await bcrypt.hash(data.password, 10);
     }

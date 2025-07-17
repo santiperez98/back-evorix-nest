@@ -15,13 +15,21 @@ export class AuthService {
     return isMatch ? user : null;
   }
 
-  async login(user: any) {
-    const payload = { email: user.email, sub: user.id };
-    return {
-      access_token: this.jwtService.sign(payload),
-      user,
-    };
-  }
+async login(user: any) {
+  const payload = {
+    email: user.email,
+    sub: user.id,
+    name: user.name,
+    picture: user.picture,
+    role: user.role,
+    provider: user.provider,
+  };
+
+  return {
+    access_token: this.jwtService.sign(payload),
+    user: payload,
+  };
+}
 
   async register(data: { email: string; password: string; name: string }) {
     const existing = await this.usersService.findByEmail(data.email);

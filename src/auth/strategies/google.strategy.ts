@@ -1,8 +1,8 @@
-// src/auth/strategies/google.strategy.ts
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
-import { Injectable } from '@nestjs/common';
 import { UsersService } from './../../users/users.service';
+import { Prisma } from '@prisma/client'; // Importa el tipo de Prisma
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -15,18 +15,35 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     });
   }
 
-  async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
-    const { name, emails, photos, provider } = profile;
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: any,
+    done: VerifyCallback,
+  ): Promise<any> {
+    const { emails, photos, provider } = profile;
 
     let user = await this.userService.findByEmail(emails[0].value);
+
     if (!user) {
       user = await this.userService.createUser({
         email: emails[0].value,
-        name: name.givenName,
+        name: profile.name.givenName || profile.displayName,
         picture: photos[0].value,
         provider,
+        role: 'USER', // Asigna rol por defecto
       });
     }
-    done(null, user);
+
+    const userInfo = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      picture: user.picture,
+      role: user.role || 'USER', // Asegura que role siempre exista
+      provider,
+    };
+
+    done(null, userInfo);
   }
 }

@@ -7,6 +7,7 @@ async function bootstrap() {
   // ✅ HABILITAR CORS
   app.enableCors({
     origin: 'http://localhost:3000', // 🧠 Cambiá esto si tu front usa otro puerto o está en producción
+     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // 🔐 Necesario si usás cookies o Authorization headers
   });
 
