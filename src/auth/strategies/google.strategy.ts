@@ -1,12 +1,12 @@
+// src/auth/strategies/google.strategy.ts
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { UsersService } from './../../users/users.service';
-import { Prisma } from '@prisma/client'; // Importa el tipo de Prisma
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor(private userService: UsersService) {
+  constructor(private readonly usersService: UsersService) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -21,17 +21,17 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     profile: any,
     done: VerifyCallback,
   ): Promise<any> {
-    const { emails, photos, provider } = profile;
+    const { name, emails, photos, provider } = profile;
 
-    let user = await this.userService.findByEmail(emails[0].value);
+    let user = await this.usersService.findByEmail(emails[0].value);
 
     if (!user) {
-      user = await this.userService.createUser({
+      user = await this.usersService.createUser({
         email: emails[0].value,
-        name: profile.name.givenName || profile.displayName,
-        picture: photos[0].value,
+        name: name.givenName || profile.displayName,
+        picture: photos[0]?.value || null,
         provider,
-        role: 'USER', // Asigna rol por defecto
+        role: 'USER',
       });
     }
 
@@ -40,8 +40,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       email: user.email,
       name: user.name,
       picture: user.picture,
-      role: user.role || 'USER', // Asegura que role siempre exista
-      provider,
+      role: user.role || 'USER',
+      provider: user.provider,
     };
 
     done(null, userInfo);

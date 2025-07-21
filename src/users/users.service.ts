@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+// src/users/users.service.ts
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 
@@ -16,11 +17,21 @@ export class UsersService {
     name: string;
     picture?: string;
     provider?: string;
-    role?: 'USER' | 'ADMIN'; // Añade el campo role aquí
+    role?: 'USER' | 'ADMIN';
   }) {
+    const existing = await this.findByEmail(data.email);
+    if (existing) {
+      throw new UnauthorizedException('El correo ya está registrado');
+    }
+
     if (data.password) {
       data.password = await bcrypt.hash(data.password, 10);
     }
+
+    if (!data.role) {
+      data.role = 'USER';
+    }
+
     return this.prisma.user.create({ data });
   }
 }
