@@ -5,7 +5,7 @@ services:
     region: oregon
     env: production
     plan: free
-    buildCommand: npm run build
+    buildCommand: npm install && npm run build
     startCommand: npm run start:prod
     envVars:
       - key: NODE_VERSION
@@ -15,4 +15,4 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_zDQod81UCROK@ep-solitary-block-acmfr3c7-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require
+        value: postgresql://neondb_owner:npg_zDQod81UCROK@ep-solitary-block-acmfr3c7-pooler.sa-east-1.aws.neon.tech/evorix-db?sslmode=require
