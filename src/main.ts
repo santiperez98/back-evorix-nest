@@ -17,7 +17,7 @@ async function bootstrap() {
 
   // 🚀 Usar el puerto que Render asigna (process.env.PORT) o 3001 como fallback
   const port = process.env.PORT || 3001;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 
   console.log(`🚀 Aplicación corriendo en el puerto ${port}`);
 }

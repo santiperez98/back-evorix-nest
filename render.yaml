@@ -8,14 +8,11 @@ services:
     buildCommand: npm run build
     startCommand: npm run start:prod
     envVars:
+      - key: NODE_VERSION
+        value: 18
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
-          name: evorix-db
-          property: connectionString
-    databases:
-      - name: evorix-db
-        plan: free
+        value: postgresql://neondb_owner:npg_zDQod81UCROK@ep-solitary-block-acmfr3c7-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require
