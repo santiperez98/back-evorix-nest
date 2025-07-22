@@ -4,13 +4,22 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ✅ HABILITAR CORS
+  // ✅ HABILITAR CORS (para permitir peticiones del frontend)
   app.enableCors({
-    origin: 'http://localhost:3000', // 🧠 Cambiá esto si tu front usa otro puerto o está en producción
+    origin: [
+      'http://localhost:3000',           // Frontend local
+      'https://evorix.com.ar ',           // Tu dominio en producción ✅
+      'https://www.evorix.com.ar ',       // Con www también
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, // 🔐 Necesario si usás cookies o Authorization headers
+    credentials: true, // 👉 Importante si usás cookies, sesiones o headers como Authorization
   });
 
-  await app.listen(process.env.PORT ?? 3001);
+  // 🚀 Usar el puerto que Render asigna (process.env.PORT) o 3001 como fallback
+  const port = process.env.PORT || 3001;
+  await app.listen(port);
+
+  console.log(`🚀 Aplicación corriendo en el puerto ${port}`);
 }
+
 bootstrap();
