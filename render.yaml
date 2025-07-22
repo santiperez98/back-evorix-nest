@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: evorix-backend
+    runtime: node
+    region: oregon
+    env: production
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: evorix-db
+          property: connectionString
+    databases:
+      - name: evorix-db
+        plan: free
